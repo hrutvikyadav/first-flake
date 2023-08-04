@@ -1,11 +1,17 @@
 {
-  description = "A very basic flake";
+    description = "A very basic flake";
 
-  outputs = { self, nixpkgs }: {
+    inputs = {
+        nixpkgs.url = github:nixos/nixpkgs?ref=nixos-23.05;
+    };
 
-    packages.x86_64-linux.hello = nixpkgs.legacyPackages.x86_64-linux.hello;
-
-    packages.x86_64-linux.default = self.packages.x86_64-linux.hello;
-
-  };
+    outputs = { self, nixpkgs }: let
+        system = "x86_64-linux";
+        pkgs = import nixpkgs { inherit system; };
+    in {
+        packages.${system} = {
+            myHello = pkgs.hello;
+            default = self.packages.${system}.myHello;
+        };
+    };
 }
